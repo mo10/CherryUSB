@@ -627,7 +627,7 @@ void ch58xfs_udc_irq(struct usbd_bus *bus)
                             udc->ep_out[epid].actual_xfer_len += read_count;
                             udc->ep_out[epid].xfer_len -= read_count;
 
-                            if ((read_count < udc->ep_out[epid].ep_mps) || (udc->ep_out[epid].xfer_len == 0)) {
+                            if ((read_count <= udc->ep_out[epid].ep_mps) || (udc->ep_out[epid].xfer_len == 0)) {
                                 usbd_event_ep_out_complete_handler(bus->busid, ((epid)&0x7f), udc->ep_out[epid].actual_xfer_len);
                             } else {
                                 if (udc->ep_out[epid].ep_type != USB_ENDPOINT_TYPE_ISOCHRONOUS) {
