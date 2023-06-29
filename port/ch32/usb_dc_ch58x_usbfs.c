@@ -674,8 +674,8 @@ void ch58xfs_udc_irq(struct usbd_bus *bus)
     } else if (intflag & RB_UIF_BUS_RST) {
         /*!< Reset */
         CH58x_USBFS_DEV->USB_DEV_AD = 0;
-        memset(udc->ep_in, 0, sizeof(struct ch58xfs_ep) * CONFIG_CH58XFS_BIDIR_ENDPOINTS);
-        memset(udc->ep_out, 0, sizeof(struct ch58xfs_ep) * CONFIG_CH58XFS_BIDIR_ENDPOINTS);
+//        memset(udc->ep_in, 0, sizeof(struct ch58xfs_ep) * CONFIG_CH58XFS_BIDIR_ENDPOINTS);
+//        memset(udc->ep_out, 0, sizeof(struct ch58xfs_ep) * CONFIG_CH58XFS_BIDIR_ENDPOINTS);
         usbd_event_reset_handler(bus->busid);
         /*!< Set ep0 rx valid to start receive setup packet */
         EPn_SET_RX_VALID(0);
