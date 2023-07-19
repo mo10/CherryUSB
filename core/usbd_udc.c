@@ -78,6 +78,11 @@ int usbd_ep_start_read(uint8_t busid, const uint8_t ep, uint8_t *data, uint32_t 
     return g_usbd_bus[busid].driver->udc_ep_start_read(&g_usbd_bus[busid], ep, data, data_len);
 }
 
+int usbd_remote_wakeup(uint8_t busid)
+{
+    return g_usbd_bus[busid].driver->udc_remote_wakeup(&g_usbd_bus[busid]);
+}
+
 void usbd_irq(uint8_t busid)
 {
     g_usbd_bus[busid].driver->udc_irq(&g_usbd_bus[busid]);

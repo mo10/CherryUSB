@@ -503,6 +503,36 @@ int ch58xfs_ep_start_read(struct usbd_bus *bus, const uint8_t ep, uint8_t *data,
     return 0;
 }
 
+extern void mDelaymS(uint16_t t);
+int ch58xfs_remote_wakeup(struct usbd_bus *bus) {
+    struct ch58xfs_udc *udc = bus->udc;
+
+    if (udc == NULL) {
+        return -1;
+    }
+
+    if (!(CH58x_USBFS_DEV->USB_MIS_ST & RB_UMS_SUSPEND)) {
+        return 0;
+    }
+
+    if ((uint32_t) & (CH58x_USBFS_DEV->USB_CTRL) == (uint32_t)USB0_BASE) {
+        /*!< USB0 */
+        R16_PIN_ANALOG_IE &= ~RB_PIN_USB_DP_PU;
+        CH58x_USBFS_DEV->UDEV_CTRL |= RB_UD_LOW_SPEED;
+        mDelaymS(2);
+        CH58x_USBFS_DEV->UDEV_CTRL &= ~RB_UD_LOW_SPEED;
+        R16_PIN_ANALOG_IE |= RB_PIN_USB_DP_PU;
+    } else if ((uint32_t) & (CH58x_USBFS_DEV->USB_CTRL) == (uint32_t)USB1_BASE) {
+        /*!< USB1 */
+        R16_PIN_ANALOG_IE &= ~RB_PIN_USB2_DP_PU;
+        CH58x_USBFS_DEV->UDEV_CTRL |= RB_UD_LOW_SPEED;
+        mDelaymS(2);
+        CH58x_USBFS_DEV->UDEV_CTRL &= ~RB_UD_LOW_SPEED;
+        R16_PIN_ANALOG_IE |= RB_PIN_USB2_DP_PU;
+    }
+    return 0;
+}
+
 /**
  * @brief            USB interrupt processing function
  * @pre              None
@@ -683,8 +713,10 @@ void ch58xfs_udc_irq(struct usbd_bus *bus)
     } else if (intflag & RB_UIF_SUSPEND) {
         if (CH58x_USBFS_DEV->USB_MIS_ST & RB_UMS_SUSPEND) {
             /*!< Suspend */
+            usbd_event_suspend_handler(bus->busid);
         } else {
             /*!< Wake up */
+            usbd_event_resume_handler(bus->busid);
         }
         CH58x_USBFS_DEV->USB_INT_FG = RB_UIF_SUSPEND;
     } else {
@@ -705,6 +737,7 @@ struct usbd_udc_driver ch58xfs_udc_driver = {
     .udc_ep_is_stalled = ch58xfs_ep_is_stalled,
     .udc_ep_start_write = ch58xfs_ep_start_write,
     .udc_ep_start_read = ch58xfs_ep_start_read,
+    .udc_remote_wakeup = ch58xfs_remote_wakeup,
     .udc_irq = ch58xfs_udc_irq
 };
 

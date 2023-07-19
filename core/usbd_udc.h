@@ -24,6 +24,7 @@ struct usbd_udc_driver {
     int (*udc_ep_is_stalled)(struct usbd_bus *bus, const uint8_t ep, uint8_t *stalled);
     int (*udc_ep_start_write)(struct usbd_bus *bus, const uint8_t ep, const uint8_t *data, uint32_t data_len);
     int (*udc_ep_start_read)(struct usbd_bus *bus, const uint8_t ep, uint8_t *data, uint32_t data_len);
+    int (*udc_remote_wakeup)(struct usbd_bus *bus);
     void (*udc_irq)(struct usbd_bus *bus);
 };
 
